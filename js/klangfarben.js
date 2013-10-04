@@ -1,38 +1,38 @@
 $(function() {
-  play = $('#play_button');
-  pause = $('#pause_button');
-  mute = $('#mute_button');
-  audioInput = $('.audio-input');
+  var dropZone    = $('#drop-zone'),
+      audioPlayer = $('.audio-player'),
+      audioFiles  = [], currentFile;
 
-  audioInput.change(function(){
-    fileName = $(this).val();
-    cleanFileName = fileName.split('\\').pop();
-    audio = new Audio(fileName);
-    console.log(audio);
-  });
+  // function supportsFileAPI(){
+  //   return window.File && window.FileReader && window.FileList && window.Blob;
+  // }
 
-  // var fileName = $('.audio-input').val();
-  // var clean = fileName.split('\\').pop();
-  // var audio = new Audio(clean);
+  // if supportsFileAPI(){
 
+  // } else {
+  //   console.log('not supported');
+  //   return;
+  // }
 
-  // console.log(audio);
+  function handleDrop(e) {
+    e.stopPropagation();
+    e.preventDefault();
+    var files = e.originalEvent.dataTransfer.files, // file list object
+        i, f;
 
+    for(i=0; f = files[i]; i++) {
+      if(f.type === 'audio/mp3')
+        audioFiles.push(f);
+    }
+    console.log(audioFiles);
+  }
 
- 	// play.on('click', function(e){
- 	// 	e.preventDefault();
- 	// 	console.log('play');
-  //   audio.play();
- 	// });
+  function handleDragOver(e){
+    console.log('drag over');
+    e.stopPropagation();
+    e.preventDefault();
+  }
 
- 	// pause.on('click', function(e){
- 	// 	e.preventDefault();
-  //   audio.pause();
- 	// });
-
-  // mute.on('click', function(e){
-  //   e.preventDefault();
-  //   audio.volume = 0;
-  // });
-
+  dropZone.on('dragover', handleDragOver);
+  dropZone.on('drop', handleDrop);
 });
