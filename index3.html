@@ -1,0 +1,149 @@
+<!doctype html>
+<html>
+    <head>
+        <title>HTML5 FileAPI</title>
+        <meta charset="utf-8" />
+        <style type="text/css">
+            #files {
+                width: 400px;
+                height: 200px;
+                background-color: #CDEB8B;
+                text-align: center;
+                display: table-cell;
+                vertical-align: middle;
+                border: 1px solid #eee;
+            }
+
+            #playercontrols, #filelist {
+                border: 1px solid #eeeeee;
+                width: 400px;
+            }
+
+            #playercontrols {
+                text-align: center;
+            }
+        </style>
+    </head>
+    <body>
+    This is an HTML5 mp3 player - no plugins required!
+    <div id="files">Drop zone! Drop your mp3 files here.<br />(They won't be uploaded. If you don't trust me, <a href="http://github.com/migerh/js-experiments/blob/master/fileapi/index.html">look at the source code</a> or just download this file and use it locally :)</div>
+    <div id="filelist">Your playlist:<ul id="filelistul"></ul></div>
+    <div id="playercontrols">
+        <audio id="player" src="">Audio tag is not supported.</audio>
+        <table><tr><td style="background-color: #eee; width: 0px; height: 10px;" id="done"></td><td style="background-color: white; width: 400px; height: 10px;" id="todo"></td></tr></table>
+        <a href="javascript:" id="rw">&lt;&lt;</a>
+        <a href="javascript:" id="play">|&gt;</a>
+        <a href="javascript:document.getElementById('player').pause();">||</a>
+        <a href="javascript:" id="ff">&gt;&gt;</a>
+    </div>
+<script type="text/javascript">
+    (function () {
+        var file_drop = document.getElementById('files'),
+            player = document.getElementById('player'),
+            audiofiles = [], currentFile;
+
+        function supportsFileAPI() {
+            return window.File && window.FileReader && window.FileList && window.Blob;
+        }
+
+        function playFile(idx) {
+        		console.log(idx);
+            var freader = new FileReader(),
+                f = audiofiles[idx];
+
+            freader.onload = function(e) {
+                player.src = e.target.result;
+                console.log(player);
+                player.play();
+            };
+            currentFile = idx;
+            freader.readAsDataURL(f);
+        }
+
+        function handleDrop(e) {
+            e.stopPropagation();
+            e.preventDefault();
+
+            var files = e.dataTransfer.files, // file list object
+                output = [], i, f;
+
+            for(i=0; f = files[i]; i++) {
+                output.push('<li><strong>', f.name, '<'+'/strong> - ', f.size, ' bytes<'+'/li>');
+                if(f.type === 'audio/mp3')
+                    audiofiles.push(f);
+            }
+            document.getElementById('filelistul').innerHTML += output.join('');
+        }
+
+        function handleDragOver(e) {
+            e.stopPropagation();
+            e.preventDefault();
+        }
+
+        function handleEnded(e) {
+            currentFile++;
+            if(currentFile === audiofiles.length)
+                currentFile = 0;
+            else
+                playFile(currentFile);
+        }
+
+        function handleRW(e) {
+            currentFile--;
+            if(currentFile === -1)
+                currentFile = audiofiles.length-1;
+
+            playFile(currentFile);
+        }
+
+        function handlePlayerLoad(e) {
+            player.play();
+        }
+
+        function handleProgress(e) {
+            var total = e.target.duration,
+                current = e.target.currentTime;
+
+            document.getElementById('done').style.width = current/total*400 + 'px';
+            document.getElementById('todo').style.width = 400 - current/total*400 + 'px';
+            if(!e.target.paused && !e.target.ended)
+                window.setTimeout(function() { return handleProgress({target: player}); }, 1000);
+        }
+
+        function handlePlay(e) {
+        		console.log('handle');
+            if(currentFile)
+                player.play();
+            else
+            		console.log('play file 0');
+                playFile(0);
+            window.setTimeout(function() { return handleProgress({target: player}); }, 1000);
+        }
+
+        function hideControls(message) {
+            document.getElementById('files').innerHTML = message + ' But <a href="http://www.google.com/chrome">Google Chrome<'+'/a> does. You should try it!';
+            document.getElementById('files').style.backgroundColor = '#D15600';
+            document.getElementById('playercontrols').style.display = 'none';
+            document.getElementById('filelist').style.display = 'none';
+        }
+
+        if(!supportsFileAPI()) {
+            hideControls('Your browser does not support the FileAPI.');
+            return;
+        } else if (!(typeof player.canPlayType === "function" && player.canPlayType("audio/mpeg") !== "")) {
+            hideControls('Your browser does not support the HTML5 audio tag with mp3.');
+            return;
+        }
+
+        file_drop.addEventListener('dragover', handleDragOver, false);
+        file_drop.addEventListener('drop', handleDrop, false);
+        player.addEventListener('ended', handleEnded, false);
+        player.addEventListener('load', handlePlayerLoad, false);
+
+        document.getElementById('ff').addEventListener('click', handleEnded, false);
+        document.getElementById('rw').addEventListener('click', handleRW, false);
+        document.getElementById('play').addEventListener('click', handlePlay, false);
+    })();
+</script>
+    </body>
+</html>
