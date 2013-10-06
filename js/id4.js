@@ -21,7 +21,7 @@
         // '©wrt': ['composer'],
         // '©too': ['encoder'],
         // 'cprt': ['copyright'],
-        // 'covr': ['picture'],
+        'covr': ['picture'],
         // '©grp': ['grouping'],
         // 'keyw': ['keyword'],
         // '©lyr': ['lyrics'],

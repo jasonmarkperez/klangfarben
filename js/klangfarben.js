@@ -7,7 +7,7 @@ $(function() {
   mute  = $('#mute');
   muted = $('#muted');
   stop  = $('#stop');
-  input = $('#inputFiles');
+  input = $('#input-files');
   trackInfo  = $('#track-info')
   song = new Audio('gemini.m4a');
   // console.log(song.src);
@@ -15,12 +15,15 @@ $(function() {
   // console.log(song.src);
 
 
+  $('.jumbotron').animate({top: 0}, 1000);
+
+  $('#open-file').on('click', function(e){
+    input.click();
+  });
   input.on('change', function(e){
     // console.log(e);
     loadedFile = e.target.files[0];
-    // console.log(loadedFile.source);
 
-    // song.setAttribute('src', )
 
     var audioReader = new FileReader();
     audioReader.onload = function(e){
@@ -29,11 +32,7 @@ $(function() {
     audioReader.readAsDataURL(loadedFile);
 
     var binaryReader = new FileReader();
-
-
     binaryReader.onload = function(e){
-      // console.log(e);
-      // console.log(e.target);
       var dv = new jDataView(this.result, 0, this.length, false);
       var reader = getTagReader(dv)
       updateTrackInfo(readTags(reader, dv));
@@ -51,11 +50,32 @@ $(function() {
     }
   });
 
+  function readURL(input) {
+
+    var reader = new FileReader();
+    console.log(reader);
+    reader.onload = function (e) {
+      console.log(e);
+    }
+
+    reader.readAsDataURL(input);
+  }
+
+
   function updateTrackInfo(tags){
-    // console.log(tags);
+    console.log("update");
     trackInfo.children(".track").append(tags.title);
-    trackInfo.children(".artist").append(tags.artist);
+    trackInfo.children(".artist").append(tags.artist + ' - ');
     trackInfo.children(".album").append(tags.album);
+    // console.log(base64.decode(tags.picture));
+
+
+    // var image = 'data:image/png,' + tags.picture;
+    // trackInfo.children(".cover").attr('src', image);
+    // img.src = 'data:image/png;base64,' + (tags.picture);
+
+    // trackInfo.append(img);
+
   }
 
   play.on('click', function(e) {
