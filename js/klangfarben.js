@@ -1,8 +1,6 @@
-
-
 $(function() {
-  dropZone    = $('#drop-zone');
-  audioPlayer = $('#audio-player');
+  // dropZone    = $('#drop-zone');
+  // audioPlayer = $('#audio-player');
 
   play  = $('#play');
   pause = $('#pause');
@@ -12,12 +10,35 @@ $(function() {
   input = $('#inputFiles');
   trackInfo  = $('#track-info')
   song = new Audio('gemini.m4a');
-  // console.log(song);
-
+  // console.log(song.src);
+  // console.log(song.source);
+  // console.log(song.src);
 
 
   input.on('change', function(e){
+    // console.log(e);
+    loadedFile = e.target.files[0];
+    // console.log(loadedFile.source);
+
+    // song.setAttribute('src', )
+
+    var audioReader = new FileReader();
+    audioReader.onload = function(e){
+      song.setAttribute('src', this.result)
+    }
+    audioReader.readAsDataURL(loadedFile);
+
     var binaryReader = new FileReader();
+
+
+    binaryReader.onload = function(e){
+      // console.log(e);
+      // console.log(e.target);
+      var dv = new jDataView(this.result, 0, this.length, false);
+      var reader = getTagReader(dv)
+      updateTrackInfo(readTags(reader, dv));
+    }
+    binaryReader.readAsBinaryString(loadedFile);
 
     function getTagReader(data) {
      // FIXME: improve this detection according to the spec
@@ -28,17 +49,10 @@ $(function() {
     function readTags(reader, data) {
       return reader.readTagsFromData(data);
     }
-
-    binaryReader.readAsBinaryString(input[0].files[0]);
-    binaryReader.onload = function(e){
-      var dv = new jDataView(this.result, 0, this.length, false);
-      var reader = getTagReader(dv)
-      updateTrackInfo(readTags(reader, dv));
-    }
   });
 
   function updateTrackInfo(tags){
-    console.log(tags);
+    // console.log(tags);
     trackInfo.children(".track").append(tags.title);
     trackInfo.children(".artist").append(tags.artist);
     trackInfo.children(".album").append(tags.album);
