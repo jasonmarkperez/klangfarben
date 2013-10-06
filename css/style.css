@@ -24,7 +24,7 @@ textarea, input { outline: none; }
   .button-group .glyphicon{
     z-index: 1;
     text-shadow:  rgba(255,255,255,0.08) 0 -1px 0;
-    color: #000;
+    color: #171717;
   }
 
 .player-button {
@@ -63,6 +63,37 @@ textarea, input { outline: none; }
     background: linear-gradient(to bottom,  hsl(0,0%,20%) 0%,hsl(0,0%,15%) 100%); /* W3C */
     filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#333333', endColorstr='#262626',GradientType=0 ); /* IE6-9 */
     border-top: 1px solid rgba(255,255,255,0.15);
+  }
+
+  .player-button:hover:before {
+    background: #333;
+    background: -moz-linear-gradient(top,  hsl(0,0%,20%) 0%, hsl(0,0%,20%) 100%); /* FF3.6+ */
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,hsl(0,0%,20%)), color-stop(100%,hsl(0,0%,15%))); /* Chrome,Safari4+ */
+    background: -webkit-linear-gradient(top,  hsl(0,0%,20%) 0%,hsl(0,0%,20%) 100%); /* Chrome10+,Safari5.1+ */
+    background: -o-linear-gradient(top,  hsl(0,0%,20%) 0%,hsl(0,0%,20%) 100%); /* Opera 11.10+ */
+    background: -ms-linear-gradient(top,  hsl(0,0%,20%) 0%,hsl(0,0%,20%) 100%); /* IE10+ */
+    background: linear-gradient(to bottom,  hsl(0,0%,20%) 0%,hsl(0,0%,20%) 100%); /* W3C */
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#333333', endColorstr='#262626',GradientType=0 ); /* IE6-9 */
+  }
+
+  .player-button.active:hover:before {
+    /*to do*/
+  }
+
+  button.active .player-button:before {
+    -webkit-transition: color 2s ease-out;
+    -moz-transition: color 2s ease-out;
+    -o-transition: color 2s ease-out;
+    transition: color 2s ease-out;
+    color: #4a4a4a;
+    background: #333333; /* Old browsers */
+    background: -moz-linear-gradient(top,  hsl(0,0%,15%) 0%, hsl(0,0%,10%) 100%); /* FF3.6+ */
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,hsl(0,0%,15%)), color-stop(100%,hsl(0,0%,10%))); /* Chrome,Safari4+ */
+    background: -webkit-linear-gradient(top,  hsl(0,0%,15%) 0%,hsl(0,0%,10%) 100%); /* Chrome10+,Safari5.1+ */
+    background: -o-linear-gradient(top,  hsl(0,0%,15%) 0%,hsl(0,0%,10%) 100%); /* Opera 11.10+ */
+    background: -ms-linear-gradient(top,  hsl(0,0%,15%) 0%,hsl(0,0%,10%) 100%); /* IE10+ */
+    background: linear-gradient(to bottom,  hsl(0,0%,15%) 0%,hsl(0,0%,10%) 100%); /* W3C */
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#333333', endColorstr='#262626',GradientType=0 ); /* IE6-9 */
   }
 
 .container {
@@ -116,6 +147,10 @@ textarea, input { outline: none; }
 #track-info .artist,
 #track-info .album {
   font-size: 18px;
+}
+
+#track-info .track-timing {
+  display: block;
 }
 
 .cover{

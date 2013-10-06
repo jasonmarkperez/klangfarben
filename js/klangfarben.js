@@ -9,10 +9,12 @@ $(function() {
   stop  = $('#stop');
   input = $('#input-files');
   trackInfo  = $('#track-info')
+  trackTiming = $('#track-info .track-timing')
   song = new Audio('gemini.m4a');
   // console.log(song.src);
   // console.log(song.source);
   // console.log(song.src);
+
 
 
   $('.jumbotron').animate({top: 0}, 1000);
@@ -20,11 +22,10 @@ $(function() {
   $('#open-file').on('click', function(e){
     input.click();
   });
+
   input.on('change', function(e){
     // console.log(e);
     loadedFile = e.target.files[0];
-
-
     var audioReader = new FileReader();
     audioReader.onload = function(e){
       song.setAttribute('src', this.result)
@@ -64,18 +65,13 @@ $(function() {
 
   function updateTrackInfo(tags){
     console.log("update");
+    song.addEventListener('timeupdate', function(e){
+      trackTiming.children('.current-time').html(String(this.currentTime).toHHMMSS());
+    }, false)
+    // could be more efficient if we determine that the time has changed enough to warrant an update
     trackInfo.children(".track").append(tags.title);
     trackInfo.children(".artist").append(tags.artist + ' - ');
     trackInfo.children(".album").append(tags.album);
-    // console.log(base64.decode(tags.picture));
-
-
-    // var image = 'data:image/png,' + tags.picture;
-    // trackInfo.children(".cover").attr('src', image);
-    // img.src = 'data:image/png;base64,' + (tags.picture);
-
-    // trackInfo.append(img);
-
   }
 
   play.on('click', function(e) {
@@ -83,11 +79,13 @@ $(function() {
     song.play();
     play.toggle();
     pause.toggle();
+    song
   });
 
   pause.on('click', function(e) {
     e.preventDefault();
-    song.pause();
+    $(song).animate({volume: 0}, 800);
+    song.pause;
     play.toggle();
     pause.toggle();
   });
@@ -181,3 +179,16 @@ $(function() {
   // $('#play').on('click', handlePlay);
   // $('#stop').on('click', handleStop);
 });
+
+String.prototype.toHHMMSS = function () {
+  var sec_num = parseInt(this, 10); // don't forget the second parm
+  var hours   = Math.floor(sec_num / 3600);
+  var minutes = Math.floor((sec_num - (hours * 3600)) / 60);
+  var seconds = sec_num - (hours * 3600) - (minutes * 60);
+
+  if (hours   < 10) {hours   = "0"+hours;}
+  if (minutes < 10) {minutes = "0"+minutes;}
+  if (seconds < 10) {seconds = "0"+seconds;}
+  var time    = hours+':'+minutes+':'+seconds;
+  return time;
+}
