@@ -1,5 +1,5 @@
 var klangFarben = $(function() {
-  song = document.getElementById('player');
+  song = new Audio();
   play  = $('#play');
   pause = $('#pause');
   var fileInput = $('#input-files');
@@ -39,9 +39,22 @@ var klangFarben = $(function() {
         trackInfo.find('.current-time').html(String(this.currentTime).toHHMMSS());
       }, false);
       // could be more efficient if we determine that the time has changed enough to warrant an update
-      trackInfo.find(".track").html(tags.title);
-      trackInfo.find(".artist").html(tags.artist + ' - ');
-      trackInfo.find(".album").html(tags.album);
+      if(typeof tags.track != 'undefined') {
+        trackInfo.find(".track").html(tags.title);
+      } else {
+        trackInfo.find(".track").html("Blank");
+      }
+      if(typeof tags.artist != 'undefined'){
+        trackInfo.find(".artist").html(tags.artist + ' - ');
+      } else {
+        trackInfo.find(".artist").html("Blank");
+      }
+      if(typeof tags.album != 'undefined'){
+        trackInfo.find(".album").html(tags.album);
+      } else {
+        trackInfo.find(".album").html("Blank");
+      }//super hack to fix last minute bug when loading an mp3 with missing tags
+      //never do this in real life
     }
 
     function getTagReader(data) {
@@ -76,6 +89,8 @@ var klangFarben = $(function() {
 
     dropZone.addEventListener('dragover', handleDragOver, false);
     dropZone.addEventListener('drop', handleFileSelect, false);
+    //kind of a hack, was having trouble using jQuerys event listeners and not having the browser load
+    //the file on drop
   }());
 
   var watchFileInput = (function (){
