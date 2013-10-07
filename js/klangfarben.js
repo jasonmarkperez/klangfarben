@@ -1,20 +1,12 @@
 var klangFarben = $(function() {
+  song = document.getElementById('player');
   play  = $('#play');
   pause = $('#pause');
-
   var fileInput = $('#input-files');
 
   var setupAndBuildPlayer = (function () {
     var deployJumbotron = function() {
       $('.jumbotron').animate({top: 0}, 1000);
-    };
-
-    var attachKeyCommands = function() {
-      $('body').keyup(function(e){
-       if(e.keyCode === 32){
-
-       }
-      });
     };
 
     var bindFileInput = function(){
@@ -24,9 +16,8 @@ var klangFarben = $(function() {
     };
 
     deployJumbotron();
-    attachKeyCommands();
     bindFileInput();
-  }(fileInput));
+  }());
 
   var trackInformation = (function() {
     function readTags(reader, data) {
@@ -67,26 +58,28 @@ var klangFarben = $(function() {
   }());
 
   var setupDragAndDrop = (function (){
+    var dropZone = document.getElementById('klang');
     function handleFileSelect(evt) {
       evt.stopPropagation();
       evt.preventDefault();
       var files = evt.dataTransfer.files; // FileList object.
       audioPlayer.loadNewTrack(files[0]);
+      $(dropZone).removeClass('dragover');
     }
 
     function handleDragOver(evt) {
       evt.stopPropagation();
       evt.preventDefault();
+      $(dropZone).addClass('dragover')
       evt.dataTransfer.dropEffect = 'copy'; // Explicitly show this is a copy.
     }
-    var dropZone = document.getElementById('klang');
+
     dropZone.addEventListener('dragover', handleDragOver, false);
     dropZone.addEventListener('drop', handleFileSelect, false);
   }());
 
   var watchFileInput = (function (){
     fileInput.on('change', function(e){
-      console.log('change');
       var loadedFile = e.target.files[0];
       audioPlayer.loadNewTrack(loadedFile);
     });
@@ -94,7 +87,6 @@ var klangFarben = $(function() {
 
   var audioPlayer = (function(){
     function loadNewAudio(loadedFile) {
-      console.log('load new audio');
       var audioReader = new FileReader();
       audioReader.onload = function(e){
         song.setAttribute('src', this.result);
@@ -103,61 +95,79 @@ var klangFarben = $(function() {
     }
     return {
       loadNewTrack: function(loadedFile){
+        play.removeClass('playable');
         trackInformation.loadTrackInfo(loadedFile);
         loadNewAudio(loadedFile);
+      },
+      songIsLoaded: function(){
+        return (!$(song).attr('src') == '');
+      },
+      songIsPlaying: function(){
+        return !(song.paused);
       }
     };
   }());
 
   play.on('click', function(e) {
     e.preventDefault();
-    $(song).animate({volume: 1}, 200);
-    song.play();
-    play.toggle();
-    pause.toggle();
+    if(audioPlayer.songIsLoaded()){
+      $(song).animate({volume: 1}, 200);
+      song.play();
+    }
   });
 
   $('#track-back').on('click', function(e){
     e.preventDefault();
-    song.currentTime = 0;
+    if(audioPlayer.songIsLoaded()){
+      song.currentTime = 0;
+    }
   });
 
 
+  var rewinding = false;
   $('#rewind').on('click', function(e){
     e.preventDefault();
-    console.log(rewinding);
-    if(rewinding === false){
-      console.log('check');
-       var direction = -1; // or -1 for reverse
-        song.setAttribute('data-playbackRate', setInterval((function playbackRate () {
-           song.currentTime += direction;
-           console.log(direction);
-           console.log(song.playbackRate);
-           return playbackRate; // allows us to run the function once and setInterval
-        })(), 500));
-        rewinding = true;
-
-    } else {
-      rewinding = false;
-      clearInterval(song.getAttribute('data-playbackRate'));
+    if(audioPlayer.songIsLoaded() && audioPlayer.songIsPlaying()){
+      if(rewinding === false){
+          $(this).addClass('active');
+         var direction = -1; // or -1 for reverse
+          song.setAttribute('data-playbackRate', setInterval((function playbackRate () {
+             song.currentTime += direction;
+             return playbackRate; // allows us to run the function once and setInterval
+          })(), 500));
+          rewinding = true;
+      } else {
+        $(this).removeClass('active');
+        rewinding = false;
+        clearInterval(song.getAttribute('data-playbackRate'));
+      }
     }
   });
 
   $('#fast-forward').on('click', function(e){
     e.preventDefault();
-    if(song.playbackRate === 1){
-      song.playbackRate = 4;
-    } else{
-      song.playbackRate = 1
+    if(audioPlayer.songIsLoaded() && audioPlayer.songIsPlaying()){
+      if(song.playbackRate === 1){
+        $(this).addClass('active');
+        song.playbackRate = 4;
+      } else{
+        $(this).removeClass('active');
+        song.playbackRate = 1
+      }
     }
+  });
+
+
+  $(song).on("canplaythrough", function(){
+    play.addClass('playable');
   });
 
   pause.on('click', function(e) {
     e.preventDefault();
-    $(song).animate({volume: 0}, 800);
-    song.pause();
-    play.toggle();
-    pause.toggle();
+    if(audioPlayer.songIsLoaded()){
+      $(song).animate({volume: 0}, 800);
+      song.pause();
+    }
   });
 
 });
