@@ -1,37 +1,4 @@
 $(function() {
-
-
-  function handleFileSelect(evt) {
-    evt.stopPropagation();
-    evt.preventDefault();
-
-    var files = evt.dataTransfer.files; // FileList object.
-    console
-    // files is a FileList of File objects. List some properties.
-    // var output = [];
-    // for (var i = 0, f; f = files[i]; i++) {
-    //   output.push('<li><strong>', escape(f.name), '</strong> (', f.type || 'n/a', ') - ',
-    //               f.size, ' bytes, last modified: ',
-    //               f.lastModifiedDate ? f.lastModifiedDate.toLocaleDateString() : 'n/a',
-    //               '</li>');
-    // }
-    // document.getElementById('list').innerHTML = '<ul>' + output.join('') + '</ul>';
-  }
-
-  function handleDragOver(evt) {
-    evt.stopPropagation();
-    evt.preventDefault();
-    evt.dataTransfer.dropEffect = 'copy'; // Explicitly show this is a copy.
-  }
-
-  // Setup the dnd listeners.
-  var dropZone = document.getElementById('klang');
-  dropZone.addEventListener('dragover', handleDragOver, false);
-  dropZone.addEventListener('drop', handleFileSelect, false);
-
-
-  // audioPlayer = $('#audio-player');
-
   play  = $('#play');
   pause = $('#pause');
   mute  = $('#mute');
@@ -40,20 +7,61 @@ $(function() {
   input = $('#input-files');
   song = new Audio('gemini.m4a');
 
+  var setupAndBuildPlayer = (function () {
+    deployJumbotron = function() {
+      $('.jumbotron').animate({top: 0}, 1000);
+    }
 
-  $('body').keyup(function(e){
-   if(e.keyCode == 32){
-    console.log('space bar');
-   }
-  });
+    attachKeyCommands = function() {
+      $('body').keyup(function(e){
+       if(e.keyCode == 32){
+        console.log('space bar');
+       }
+      });
+    }
+
+    bindFileInput = function(){
+      $('#open-file').on('click', function(e){
+        input.click();
+      });
+    }
+
+    this.deployJumbotron();
+    this.attachKeyCommands();
+    this.bindFileInput();
+  })();
+
+  var setupDragAndDrop = (function (){
+    function handleFileSelect(evt) {
+      evt.stopPropagation();
+      evt.preventDefault();
+
+      var files = evt.dataTransfer.files; // FileList object.
+      console.log(files);
+    }
+
+    function handleDragOver(evt) {
+      evt.stopPropagation();
+      evt.preventDefault();
+      evt.dataTransfer.dropEffect = 'copy'; // Explicitly show this is a copy.
+    }
+
+    var dropZone = document.getElementById('klang');
+    dropZone.addEventListener('dragover', handleDragOver, false);
+    dropZone.addEventListener('drop', handleFileSelect, false);
+  })();
 
 
 
-  $('.jumbotron').animate({top: 0}, 1000);
 
-  $('#open-file').on('click', function(e){
-    input.click();
-  });
+
+
+
+
+
+
+
+
 
   input.on('change', function(e){
     // console.log(e);
