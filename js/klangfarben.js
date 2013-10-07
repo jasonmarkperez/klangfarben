@@ -2,8 +2,6 @@ $(function() {
   song = new Audio('gemini.m4a');
   play  = $('#play');
   pause = $('#pause');
-  trackBack = $('#track-back');
-  stop  = $('#stop');
 
   var fileInput = $('#input-files');
 
@@ -15,7 +13,7 @@ $(function() {
     var attachKeyCommands = function() {
       $('body').keyup(function(e){
        if(e.keyCode === 32){
-        console.log('space bar');
+
        }
       });
     };
@@ -91,7 +89,7 @@ $(function() {
     fileInput.on('change', function(e){
       console.log('change');
       var loadedFile = e.target.files[0];
-      audioPlayer.loadNewAudio(loadedFile);
+      audioPlayer.loadNewTrack(loadedFile);
     });
   }());
 
@@ -120,13 +118,30 @@ $(function() {
     pause.toggle();
   });
 
-  trackBack.on('click', function(e){
+  $('#track-back').on('click', function(e){
     e.preventDefault();
-    console.log('track back');
-    // $(song).animate({volume: 0}, 800);
     song.currentTime = 0;
-
   });
+
+  $('#rewind').on('click', function(e){
+    e.preventDefault();
+    song.setAttribute('data-playbackRate', setInterval ((function playbackRate(){
+      song.currentTime += -1;
+      return playbackRate;
+    })(), 500));
+    //hack because playback rate reverse is broken in webkit, sigh
+  });
+
+  $('#fast-forward').on('click', function(e){
+    console.log('fast ffw');
+    e.preventDefault();
+    if(song.playbackRate === 1){
+      song.playbackRate = 4;
+    } else{
+      song.playbackRate = 1
+    }
+  });
+
 
   pause.on('click', function(e) {
     e.preventDefault();
