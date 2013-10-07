@@ -1,5 +1,4 @@
-$(function() {
-  song = new Audio('gemini.m4a');
+var klangFarben = $(function() {
   play  = $('#play');
   pause = $('#pause');
 
@@ -123,17 +122,28 @@ $(function() {
     song.currentTime = 0;
   });
 
+
   $('#rewind').on('click', function(e){
     e.preventDefault();
-    song.setAttribute('data-playbackRate', setInterval ((function playbackRate(){
-      song.currentTime += -1;
-      return playbackRate;
-    })(), 500));
-    //hack because playback rate reverse is broken in webkit, sigh
+    console.log(rewinding);
+    if(rewinding === false){
+      console.log('check');
+       var direction = -1; // or -1 for reverse
+        song.setAttribute('data-playbackRate', setInterval((function playbackRate () {
+           song.currentTime += direction;
+           console.log(direction);
+           console.log(song.playbackRate);
+           return playbackRate; // allows us to run the function once and setInterval
+        })(), 500));
+        rewinding = true;
+
+    } else {
+      rewinding = false;
+      clearInterval(song.getAttribute('data-playbackRate'));
+    }
   });
 
   $('#fast-forward').on('click', function(e){
-    console.log('fast ffw');
     e.preventDefault();
     if(song.playbackRate === 1){
       song.playbackRate = 4;
@@ -141,7 +151,6 @@ $(function() {
       song.playbackRate = 1
     }
   });
-
 
   pause.on('click', function(e) {
     e.preventDefault();
