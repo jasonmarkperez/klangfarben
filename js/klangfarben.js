@@ -7,6 +7,7 @@ $(function() {
   stop  = $('#stop');
 
   var fileInput = $('#input-files');
+
   var setupAndBuildPlayer = (function () {
     var deployJumbotron = function() {
       $('.jumbotron').animate({top: 0}, 1000);
@@ -31,13 +32,50 @@ $(function() {
     bindFileInput();
   }(fileInput));
 
+  var trackInformation = (function() {
+    function readTags(reader, data) {
+      return reader.readTagsFromData(data);
+    }
+    function loadAsBinary(loadedFile){
+      var binaryReader = new FileReader();
+      binaryReader.onload = function(e){
+        var dataView = new jDataView(e.target.result, 0, e.target.length, false);
+        var reader = getTagReader(dataView);
+        updateTrackInfo(readTags(reader, dataView));
+      }
+      binaryReader.readAsBinaryString(loadedFile)
+    }
+
+    function updateTrackInfo(tags){
+      var trackInfo  = $('#track-info');
+      song.addEventListener('timeupdate', function(){
+        trackInfo.find('.current-time').html(String(this.currentTime).toHHMMSS());
+      }, false);
+      // could be more efficient if we determine that the time has changed enough to warrant an update
+      trackInfo.find(".track").html(tags.title);
+      trackInfo.find(".artist").html(tags.artist + ' - ');
+      trackInfo.find(".album").html(tags.album);
+    }
+
+    function getTagReader(data) {
+     // FIXME: improve this detection according to the spec
+     return data.getString(7, 4) === "ftypM4A" ? ID4 :
+            (data.getString(3, 0) === "ID3" ? ID3v2 : ID3v1);
+    }
+    return {
+      loadTrackInfo: function(loadedFile){
+        console.log('load track info');
+        loadAsBinary(loadedFile);
+      }
+    };
+  }());
+
   var setupDragAndDrop = (function (){
     function handleFileSelect(evt) {
       evt.stopPropagation();
       evt.preventDefault();
-
       var files = evt.dataTransfer.files; // FileList object.
-      console.log(files);
+      audioPlayer.loadNewTrack(files[0]);
     }
 
     function handleDragOver(evt) {
@@ -45,81 +83,50 @@ $(function() {
       evt.preventDefault();
       evt.dataTransfer.dropEffect = 'copy'; // Explicitly show this is a copy.
     }
-
     var dropZone = document.getElementById('klang');
     dropZone.addEventListener('dragover', handleDragOver, false);
     dropZone.addEventListener('drop', handleFileSelect, false);
   }());
 
-  var setupReadersForAudioPlayer = (function (){
+  var watchFileInput = (function (){
     fileInput.on('change', function(e){
-      loadAsBinary(e.target.files[0]);
+      console.log('change');
+      var loadedFile = e.target.files[0];
+      audioPlayer.loadNewAudio(loadedFile);
     });
+  }());
 
-
-  })();
-
-
-  function loadAsBinary(loadedFile){
-    var binaryReader = new FileReader();
-    binaryReader.onload = function(e){
-      var dataView = new jDataView(e.target.result, 0, e.target.length, false);
-      var reader = getTagReader(dataView);
-      updateTrackInfo(readTags(reader, dataView));
+  var audioPlayer = (function(){
+    function loadNewAudio(loadedFile) {
+      console.log('load new audio');
+      var audioReader = new FileReader();
+      audioReader.onload = function(e){
+        song.setAttribute('src', this.result);
+      }
+      audioReader.readAsDataURL(loadedFile);
     }
-    binaryReader.readAsBinaryString(loadedFile)
-  }
-
-  function getTagReader(data) {
-   // FIXME: improve this detection according to the spec
-   return data.getString(7, 4) == "ftypM4A" ? ID4 :
-          (data.getString(3, 0) == "ID3" ? ID3v2 : ID3v1);
-  }
-
-  function readTags(reader, data) {
-    return reader.readTagsFromData(data);
-  }
-
-
-  function updateTrackInfo(tags){
-    trackInfo  = $('#track-info');
-    song.addEventListener('timeupdate', function(e){
-      trackInfo.find('.current-time').html(String(this.currentTime).toHHMMSS());
-    }, false);
-    // could be more efficient if we determine that the time has changed enough to warrant an update
-    trackInfo.find(".track").html(tags.title);
-    trackInfo.find(".artist").html(tags.artist + ' - ');
-    trackInfo.find(".album").html(tags.album);
-  }
+    return {
+      loadNewTrack: function(loadedFile){
+        trackInformation.loadTrackInfo(loadedFile);
+        loadNewAudio(loadedFile);
+      }
+    };
+  }());
 
   play.on('click', function(e) {
     e.preventDefault();
+    $(song).animate({volume: 1}, 200);
     song.play();
     play.toggle();
     pause.toggle();
-    song
   });
 
   pause.on('click', function(e) {
     e.preventDefault();
     $(song).animate({volume: 0}, 800);
-    song.pause;
+    song.pause();
     play.toggle();
     pause.toggle();
-  });
-
-  mute.on('click', function(e) {
-    e.preventDefault();
-    song.volume = 0;
-    play.toggle();
-    mute.toggle()
-  });
-
-  // unmute.on('click'm,)
-
-  stop.on('click', function(e) {
-    e.preventDefault();
-    //set duration
   });
 
 });

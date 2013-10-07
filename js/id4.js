@@ -63,7 +63,7 @@
             } else {
               var value = data.getString(atomSize - 24, seek + 20, false, true);
             }
-            console.log("Found tag: " + atomName + " - value: " + value);
+            // console.log("Found tag: " + atomName + " - value: " + value);
             tag[ID4.atom[atomName][0]] = value.replace(/\0/g, "");
             seek += atomSize - 4;
           } else {
