@@ -1,5 +1,35 @@
 $(function() {
-  // dropZone    = $('#drop-zone');
+
+
+  function handleFileSelect(evt) {
+    evt.stopPropagation();
+    evt.preventDefault();
+
+    var files = evt.dataTransfer.files; // FileList object.
+    console
+    // files is a FileList of File objects. List some properties.
+    // var output = [];
+    // for (var i = 0, f; f = files[i]; i++) {
+    //   output.push('<li><strong>', escape(f.name), '</strong> (', f.type || 'n/a', ') - ',
+    //               f.size, ' bytes, last modified: ',
+    //               f.lastModifiedDate ? f.lastModifiedDate.toLocaleDateString() : 'n/a',
+    //               '</li>');
+    // }
+    // document.getElementById('list').innerHTML = '<ul>' + output.join('') + '</ul>';
+  }
+
+  function handleDragOver(evt) {
+    evt.stopPropagation();
+    evt.preventDefault();
+    evt.dataTransfer.dropEffect = 'copy'; // Explicitly show this is a copy.
+  }
+
+  // Setup the dnd listeners.
+  var dropZone = document.getElementById('klang');
+  dropZone.addEventListener('dragover', handleDragOver, false);
+  dropZone.addEventListener('drop', handleFileSelect, false);
+
+
   // audioPlayer = $('#audio-player');
 
   play  = $('#play');
@@ -8,12 +38,14 @@ $(function() {
   muted = $('#muted');
   stop  = $('#stop');
   input = $('#input-files');
-  trackInfo  = $('#track-info')
-  trackTiming = $('#track-info .track-timing')
   song = new Audio('gemini.m4a');
-  // console.log(song.src);
-  // console.log(song.source);
-  // console.log(song.src);
+
+
+  $('body').keyup(function(e){
+   if(e.keyCode == 32){
+    console.log('space bar');
+   }
+  });
 
 
 
@@ -64,14 +96,14 @@ $(function() {
 
 
   function updateTrackInfo(tags){
-    console.log("update");
+    trackInfo  = $('#track-info');
     song.addEventListener('timeupdate', function(e){
-      trackTiming.children('.current-time').html(String(this.currentTime).toHHMMSS());
-    }, false)
+      trackInfo.find('.current-time').html(String(this.currentTime).toHHMMSS());
+    }, false);
     // could be more efficient if we determine that the time has changed enough to warrant an update
-    trackInfo.children(".track").append(tags.title);
-    trackInfo.children(".artist").append(tags.artist + ' - ');
-    trackInfo.children(".album").append(tags.album);
+    trackInfo.find(".track").html(tags.title);
+    trackInfo.find(".artist").html(tags.artist + ' - ');
+    trackInfo.find(".album").html(tags.album);
   }
 
   play.on('click', function(e) {
@@ -104,80 +136,6 @@ $(function() {
     //set duration
   });
 
-
-  // function supportsFileAPI(){
-  //   return window.File && window.FileReader && window.FileList && window.Blob;
-  // }
-
-  // if supportsFileAPI(){
-
-  // } else {
-  //   console.log('not supported');
-  //   return;
-  // }
-
-  // function handleDrop(e) {
-  //   console.log('drop');
-  //   e.stopPropagation();
-  //   e.preventDefault();
-  //   var files = e.originalEvent.dataTransfer.files, // file list object
-  //       i, f;
-
-  //   for(i=0; f = files[i]; i++) {
-  //     if(f.type === 'audio/mp3')
-  //       audioFiles.push(f);
-  //   }
-  // }
-
-  // function handleDragOver(e){
-  //   console.log('drag over');
-  //   e.stopPropagation();
-  //   e.preventDefault();
-  // }
-
-  // function playFile(index){
-  //   var fileReader = new FileReader(),
-  //       fileAtIndex = audioFiles[index];
-
-  //   fileReader.onload = function(e){
-  //     console.log(audioPlayer);
-  //     console.log(e.target.result);
-  //     audioPlayer.src = e.target.result;
-  //     console.log(audioPlayer.src);
-  //     audioPlayer.trigger('play');
-  //   };
-  //   currentFile = index;
-  //   fileReader.readAsDataURL(fileAtIndex);
-  // }
-
-  // function handleProgress(e){
-  //   console.log('handle progress');
-  //   console.log(e.originalEvent);
-  //   var total   = e.target.duration,
-  //       current = e.target.currentTime;
-  //   console.log(total);
-  //   console.log(current);
-  // }
-
-  // function handlePlay(e){
-  //   console.log('handle play');
-  //   if(currentFile){
-  //     console.log('to play');
-  //     audioPlayer.play();
-  //   }else{
-  //     console.log('to else');
-  //     playFile(0);
-  //   }
-  //   window.setTimeout(function() { return handleProgress({target: audioPlayer}); }, 1000);
-  // }
-
-
-  // function handleStop(){}
-  // events
-  // dropZone.on('dragover', handleDragOver);
-  // dropZone.on('drop', handleDrop);
-  // $('#play').on('click', handlePlay);
-  // $('#stop').on('click', handleStop);
 });
 
 String.prototype.toHHMMSS = function () {

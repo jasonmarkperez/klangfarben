@@ -2,6 +2,12 @@ body {
   background-color: #3d3d3d;
 }
 
+.truncate {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 /*remove blue glow*/
 textarea, input { outline: none; }
 :focus {
@@ -13,6 +19,11 @@ textarea, input { outline: none; }
   visibility: hidden;
   width: 0;
   height:0;
+}
+
+.controls {
+  display: inline-block;
+  width: 315px;
 }
 
 .button-group {
@@ -100,8 +111,10 @@ textarea, input { outline: none; }
   position: relative;
 }
 
-.jumbotron {
+.container .jumbotron {
   padding: 30px;
+  width: 1000px;
+/*  width: 90%;*/
   position: absolute;
   top: -200px;
 /*  background-color: #cbcfd8;
@@ -125,19 +138,23 @@ textarea, input { outline: none; }
 
 
 #track-info {
+  margin: 3px;
+  -webkit-background-clip: padding-box;
+  background-clip: padding-box;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+  -webkit-perspective: 200;
   display: inline-block;
-  vertical-align: top;
   margin-bottom: 0;
   padding: 9px;
   font-family: Calibri, Candara, Segoe, "Segoe UI", Optima, Arial, sans-serif;
   background-color: #000;
   width: 500px;
   border-radius: 6px;
-  min-height: 50px;
+/*  width: 55%;*/
+  height: 65px;
   line-height: 1.2;
-  text-align: center;
-  border: 1px solid #86898f;
-  color: #929292;
+  color: #a69898;
+  overflow: hidden;
 }
 
 #track-info .track{
@@ -149,8 +166,23 @@ textarea, input { outline: none; }
   font-size: 18px;
 }
 
+#track-info .track-alb-artist{
+  float: left;
+  width: 370px;
+  overflow: hidden;
+}
 #track-info .track-timing {
+  text-align: right;
   display: block;
+  float: right;
+  font-size: 30px;
+/*  outline: 1px solid white;
+*/  height: 100%;
+}
+
+#track-info .description {
+  font-size: 12px;
+  text-transform: uppercase;
 }
 
 .cover{
