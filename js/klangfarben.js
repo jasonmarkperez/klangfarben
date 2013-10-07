@@ -172,7 +172,6 @@ var klangFarben = $(function() {
     }
   });
 
-
   $(song).on("canplaythrough", function(){
     play.addClass('playable');
   });
@@ -184,7 +183,6 @@ var klangFarben = $(function() {
       song.pause();
     }
   });
-
 });
 
 String.prototype.toHHMMSS = function () {
