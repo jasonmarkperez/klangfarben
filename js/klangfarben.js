@@ -1,35 +1,35 @@
 $(function() {
+  song = new Audio('gemini.m4a');
   play  = $('#play');
   pause = $('#pause');
   mute  = $('#mute');
   muted = $('#muted');
   stop  = $('#stop');
-  input = $('#input-files');
-  song = new Audio('gemini.m4a');
 
+  var fileInput = $('#input-files');
   var setupAndBuildPlayer = (function () {
-    deployJumbotron = function() {
+    var deployJumbotron = function() {
       $('.jumbotron').animate({top: 0}, 1000);
-    }
+    };
 
-    attachKeyCommands = function() {
+    var attachKeyCommands = function() {
       $('body').keyup(function(e){
-       if(e.keyCode == 32){
+       if(e.keyCode === 32){
         console.log('space bar');
        }
       });
-    }
+    };
 
-    bindFileInput = function(){
-      $('#open-file').on('click', function(e){
-        input.click();
+    var bindFileInput = function(){
+      $('#open-file').on('click', function(){
+        fileInput.click();
       });
-    }
+    };
 
-    this.deployJumbotron();
-    this.attachKeyCommands();
-    this.bindFileInput();
-  })();
+    deployJumbotron();
+    attachKeyCommands();
+    bindFileInput();
+  }(fileInput));
 
   var setupDragAndDrop = (function (){
     function handleFileSelect(evt) {
@@ -49,57 +49,35 @@ $(function() {
     var dropZone = document.getElementById('klang');
     dropZone.addEventListener('dragover', handleDragOver, false);
     dropZone.addEventListener('drop', handleFileSelect, false);
+  }());
+
+  var setupReadersForAudioPlayer = (function (){
+    fileInput.on('change', function(e){
+      loadAsBinary(e.target.files[0]);
+    });
+
+
   })();
 
 
-
-
-
-
-
-
-
-
-
-
-
-  input.on('change', function(e){
-    // console.log(e);
-    loadedFile = e.target.files[0];
-    var audioReader = new FileReader();
-    audioReader.onload = function(e){
-      song.setAttribute('src', this.result)
-    }
-    audioReader.readAsDataURL(loadedFile);
-
+  function loadAsBinary(loadedFile){
     var binaryReader = new FileReader();
     binaryReader.onload = function(e){
-      var dv = new jDataView(this.result, 0, this.length, false);
-      var reader = getTagReader(dv)
-      updateTrackInfo(readTags(reader, dv));
+      var dataView = new jDataView(e.target.result, 0, e.target.length, false);
+      var reader = getTagReader(dataView);
+      updateTrackInfo(readTags(reader, dataView));
     }
-    binaryReader.readAsBinaryString(loadedFile);
+    binaryReader.readAsBinaryString(loadedFile)
+  }
 
-    function getTagReader(data) {
-     // FIXME: improve this detection according to the spec
-     return data.getString(7, 4) == "ftypM4A" ? ID4 :
-            (data.getString(3, 0) == "ID3" ? ID3v2 : ID3v1);
-    }
+  function getTagReader(data) {
+   // FIXME: improve this detection according to the spec
+   return data.getString(7, 4) == "ftypM4A" ? ID4 :
+          (data.getString(3, 0) == "ID3" ? ID3v2 : ID3v1);
+  }
 
-    function readTags(reader, data) {
-      return reader.readTagsFromData(data);
-    }
-  });
-
-  function readURL(input) {
-
-    var reader = new FileReader();
-    console.log(reader);
-    reader.onload = function (e) {
-      console.log(e);
-    }
-
-    reader.readAsDataURL(input);
+  function readTags(reader, data) {
+    return reader.readTagsFromData(data);
   }
 
 
