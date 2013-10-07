@@ -17,23 +17,9 @@
   <input id="input-files" type="file" />
   <div class="container">
     <div class="jumbotron" id="klang">
-      <div class="controls">
-        <button class="button-group" id="open-file">
-          <span class="player-button glyphicon glyphicon-eject"></span>
-        </button>
-        <button class="button-group">
-          <span class="player-button glyphicon glyphicon-step-backward"></span>
-        </button>
-        <button class="button-group" id="stop">
-          <span class="player-button glyphicon glyphicon-stop"></span>
-        </button>
-        <button class="button-group" id="play">
-          <span class="player-button glyphicon glyphicon-play"></span>
-        </button>
-        <button class="button-group" id="pause">
-          <span class="player-button glyphicon glyphicon-pause"></span>
-        </button>
-      </div>
+      <button class="button-group" id="open-file">
+        <span class="player-button glyphicon glyphicon-eject"></span>
+      </button>
 
       <div id="track-info">
         <div class="track-alb-artist clearfix">
@@ -46,6 +32,23 @@
           <div class="current-time">00:00</div>
           <div class="description">Current Time</div>
         </div>
+      </div>
+      <div class="controls">
+        <button class="button-group" id="track-back">
+          <span class="player-button glyphicon glyphicon-step-backward"></span>
+        </button>
+        <button class="button-group" id="skip-back">
+          <span class="player-button glyphicon glyphicon-backward"></span>
+        </button>
+        <button class="button-group" id="play">
+          <span class="player-button glyphicon glyphicon-play"></span>
+        </button>
+        <button class="button-group" id="skip-forward">
+          <span class="player-button glyphicon glyphicon-forward"></span>
+        </button>
+        <button class="button-group" id="pause">
+          <span class="player-button glyphicon glyphicon-pause"></span>
+        </button>
       </div>
     </div>
   </div>

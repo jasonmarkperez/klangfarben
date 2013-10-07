@@ -2,8 +2,7 @@ $(function() {
   song = new Audio('gemini.m4a');
   play  = $('#play');
   pause = $('#pause');
-  mute  = $('#mute');
-  muted = $('#muted');
+  trackBack = $('#track-back');
   stop  = $('#stop');
 
   var fileInput = $('#input-files');
@@ -119,6 +118,14 @@ $(function() {
     song.play();
     play.toggle();
     pause.toggle();
+  });
+
+  trackBack.on('click', function(e){
+    e.preventDefault();
+    console.log('track back');
+    // $(song).animate({volume: 0}, 800);
+    song.currentTime = 0;
+
   });
 
   pause.on('click', function(e) {
